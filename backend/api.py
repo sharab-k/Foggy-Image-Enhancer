@@ -27,7 +27,7 @@ def save_upload_file_tmp(upload_file: UploadFile) -> str:
         upload_file.file.close()
 
 def encode_image(img):
-    _, buffer = cv2.imencode('.jpg', img)
+    _, buffer = cv2.imencode('.jpg', img, [cv2.IMWRITE_JPEG_QUALITY, 50])
     return base64.b64encode(buffer).decode('utf-8')
 
 @router.post("/process")

@@ -30,21 +30,34 @@ function App() {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      console.log(`Sending request to: ${apiUrl}/api/process`);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 1 minute timeout
+      
       const response = await fetch(`${apiUrl}/api/process`, {
         method: 'POST',
         body: formData,
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
+      console.log('Response received, status:', response.status);
       
       if (!response.ok) {
         throw new Error(`Server returned ${response.status}`);
       }
       
+      console.log('Parsing JSON response...');
       const data = await response.json();
+      console.log('Response parsed successfully', data.results?.length, 'images processed');
+      
       setBatchId(data.batch_id);
       setResults(data.results);
     } catch (err) {
-      setError(err.message || 'An error occurred during processing.');
-      console.error(err);
+      const errMsg = err.name === 'AbortError' ? 'Request timed out. The server took too long to respond.' : (err.message || 'An error occurred during processing.');
+      setError(errMsg);
+      console.error('Processing error:', err);
     } finally {
       setIsProcessing(false);
     }
