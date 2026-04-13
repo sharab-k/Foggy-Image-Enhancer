@@ -63,6 +63,15 @@ async def process_images(
         if img is None:
             continue
             
+        # Optimization: Resize to max 640px (native YOLO size) to speed up processing on free CPU
+        h, w = img.shape[:2]
+        max_dim = 640
+        if max(h, w) > max_dim:
+            scale = max_dim / max(h, w)
+            new_size = (int(w * scale), int(h * scale))
+            img = cv2.resize(img, new_size, interpolation=cv2.INTER_AREA)
+            print(f"Resized input image {file.filename} to {new_size}")
+            
         file_id = str(uuid.uuid4())
         
         # 1. Enhance

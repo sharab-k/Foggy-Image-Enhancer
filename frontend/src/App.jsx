@@ -33,7 +33,7 @@ function App() {
       console.log(`Sending request to: ${apiUrl}/api/process`);
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 1 minute timeout
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
       
       const response = await fetch(`${apiUrl}/api/process`, {
         method: 'POST',
