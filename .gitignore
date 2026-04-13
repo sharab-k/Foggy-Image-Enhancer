@@ -11,6 +11,7 @@ backend/.env
 npm-debug.log
 yarn-error.log
 backend/*.log
+backend/temp/
 backend/test_yolo.py
 backend/requirements.txt.bak
 frontend/.eslintcache
