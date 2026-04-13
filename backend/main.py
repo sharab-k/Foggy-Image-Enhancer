@@ -7,10 +7,10 @@ app = FastAPI(title="AI Vision Enhancement & Detection Lab",
               description="Demonstrates image enhancement algorithms and their impact on YOLOv5 object detection.",
               version="1.0.0")
 
-# Configure CORS for local development
+# Configure CORS for deployment
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], # In production, you might want to restrict this to your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
