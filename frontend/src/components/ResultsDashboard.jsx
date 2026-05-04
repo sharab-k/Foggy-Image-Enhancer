@@ -141,18 +141,18 @@ function ResultItem({ data }) {
         <div className="result-card">
           <div className="result-header">Original (Baseline)</div>
           <div className="result-stats">
-            <span>Objects: <span className="stat-value">{original.objects}</span></span>
-            <span>Avg Conf: <span className="stat-value">{original.confidence.toFixed(2)}</span></span>
-            <span>Scene: <span className={`stat-value ${original.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{original.day_night}</span> ({original.brightness.toFixed(0)})</span>
+            <span>Objects: <span className="stat-value">{original?.objects || 0}</span></span>
+            <span>Avg Conf: <span className="stat-value">{(original?.confidence || 0).toFixed(2)}</span></span>
+            <span>Scene: <span className={`stat-value ${original?.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{original?.day_night || 'Detecting...'}</span> ({original?.brightness?.toFixed(0) || '0'})</span>
           </div>
         </div>
         
         <div className="result-card">
           <div className="result-header">{METHOD_LABELS[activeMethod]} Enhanced</div>
           <div className="result-stats">
-            <span>Objects: <span className="stat-value">{active.objects}</span></span>
-            <span>Avg Conf: <span className="stat-value">{active.confidence.toFixed(2)}</span></span>
-            <span>Scene: <span className={`stat-value ${active.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{active.day_night}</span> ({active.brightness.toFixed(0)})</span>
+            <span>Objects: <span className="stat-value">{active?.objects || 0}</span></span>
+            <span>Avg Conf: <span className="stat-value">{(active?.confidence || 0).toFixed(2)}</span></span>
+            <span>Scene: <span className={`stat-value ${active?.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{active?.day_night || 'Detecting...'}</span> ({active?.brightness?.toFixed(0) || '0'})</span>
           </div>
         </div>
       </div>

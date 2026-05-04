@@ -78,7 +78,4 @@ def detect_objects(image):
         cv2.rectangle(annotated_image, (x1, y1 - label_height - baseline), (x1 + label_width, y1), (229, 70, 79), -1)
         cv2.putText(annotated_image, label, (x1, y1 - baseline), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
         
-    # Detect Day/Night
-    day_night_status, brightness = detect_day_night(image)
-    
-    return annotated_image, num_objects, avg_confidence, day_night_status, brightness
+    return annotated_image, num_objects, avg_confidence, None, None
