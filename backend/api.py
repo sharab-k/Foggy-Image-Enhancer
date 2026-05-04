@@ -86,7 +86,7 @@ async def process_images(
         
         for method_name, enc_img in enhanced_dict.items():
             # Detect objects
-            annotated_img, count, conf = detect_objects(enc_img)
+            annotated_img, count, conf, day_night, brightness = detect_objects(enc_img)
             
             # Save to disk for ZIP download later
             save_path = os.path.join(batch_dir, f"{file_id}_{method_name}.jpg")
@@ -96,7 +96,9 @@ async def process_images(
             image_results["methods"][method_name] = {
                 "image": f"data:image/jpeg;base64,{encode_image(annotated_img)}",
                 "objects": count,
-                "confidence": conf
+                "confidence": conf,
+                "day_night": day_night,
+                "brightness": brightness
             }
             
         results.append(image_results)

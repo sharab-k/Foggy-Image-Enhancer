@@ -16,6 +16,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+async def root():
+    return {"message": "Foggy Image Enhancer API is running. Use /api/process for image processing."}
+
 app.include_router(api_router, prefix="/api")
 
 # Create a temporary directory for processing if it doesn't exist

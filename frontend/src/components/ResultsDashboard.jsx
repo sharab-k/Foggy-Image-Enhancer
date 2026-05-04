@@ -136,16 +136,18 @@ function ResultItem({ data }) {
         <div className="result-card">
           <div className="result-header">Original (Baseline)</div>
           <div className="result-stats">
-            <span>Objects Detected: <span className="stat-value">{original.objects}</span></span>
-            <span>Avg Confidence: <span className="stat-value">{original.confidence.toFixed(2)}</span></span>
+            <span>Objects: <span className="stat-value">{original.objects}</span></span>
+            <span>Avg Conf: <span className="stat-value">{original.confidence.toFixed(2)}</span></span>
+            <span>Scene: <span className={`stat-value ${original.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{original.day_night}</span></span>
           </div>
         </div>
         
         <div className="result-card">
           <div className="result-header">{METHOD_LABELS[activeMethod]} Enhanced</div>
           <div className="result-stats">
-            <span>Objects Detected: <span className="stat-value">{active.objects}</span></span>
-            <span>Avg Confidence: <span className="stat-value">{active.confidence.toFixed(2)}</span></span>
+            <span>Objects: <span className="stat-value">{active.objects}</span></span>
+            <span>Avg Conf: <span className="stat-value">{active.confidence.toFixed(2)}</span></span>
+            <span>Scene: <span className={`stat-value ${active.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{active.day_night}</span></span>
           </div>
         </div>
       </div>

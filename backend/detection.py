@@ -10,6 +10,21 @@ except Exception as e:
     print(f"Error loading model: {e}")
     model = None
 
+def detect_day_night(image):
+    """
+    Detects if the image is taken during day or night based on average brightness.
+    Returns 'Day' or 'Night' and the average brightness value.
+    """
+    # Convert to LAB color space to get the L (Lightness) channel
+    lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+    l_channel = lab[:, :, 0]
+    avg_brightness = np.mean(l_channel)
+    
+    # Threshold for day/night (experimentally chosen)
+    threshold = 100 
+    status = "Day" if avg_brightness > threshold else "Night"
+    return status, float(avg_brightness)
+
 def detect_objects(image):
     """
     Run YOLOv5 object detection on a BGR image (OpenCV format).
@@ -53,4 +68,7 @@ def detect_objects(image):
         cv2.rectangle(annotated_image, (x1, y1 - label_height - baseline), (x1 + label_width, y1), (229, 70, 79), -1)
         cv2.putText(annotated_image, label, (x1, y1 - baseline), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
         
-    return annotated_image, num_objects, avg_confidence
+    # Detect Day/Night
+    day_night_status, brightness = detect_day_night(image)
+    
+    return annotated_image, num_objects, avg_confidence, day_night_status, brightness

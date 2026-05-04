@@ -262,6 +262,14 @@ body {
   color: var(--text-main);
 }
 
+.text-day {
+  color: #FBBF24; /* Amber 400 */
+}
+
+.text-night {
+  color: #818CF8; /* Indigo 400 */
+}
+
 /* Summary Table */
 .summary-table-wrapper {
   overflow-x: auto;
