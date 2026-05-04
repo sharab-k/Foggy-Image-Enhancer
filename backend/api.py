@@ -77,7 +77,11 @@ async def process_images(
         # 1. Enhance
         enhanced_dict = process_all_enhancements(img, params)
         
-        # 2. Detect & Collect Results
+        # 2. Detect Day/Night once on the ORIGINAL image
+        from detection import detect_day_night
+        day_night, brightness = detect_day_night(img)
+        
+        # 3. Detect & Collect Results
         image_results = {
             "filename": file.filename,
             "id": file_id,
@@ -86,7 +90,7 @@ async def process_images(
         
         for method_name, enc_img in enhanced_dict.items():
             # Detect objects
-            annotated_img, count, conf, day_night, brightness = detect_objects(enc_img)
+            annotated_img, count, conf, _, _ = detect_objects(enc_img)
             
             # Save to disk for ZIP download later
             save_path = os.path.join(batch_dir, f"{file_id}_{method_name}.jpg")

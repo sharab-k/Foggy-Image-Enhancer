@@ -103,7 +103,12 @@ function ResultItem({ data }) {
   return (
     <div className="card result-group">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0 }}>File: {data.filename}</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <h3 style={{ margin: 0 }}>File: {data.filename}</h3>
+          <span className={`scene-badge ${original.day_night === 'Night' ? 'badge-night' : 'badge-day'}`}>
+            {original.day_night} Mode
+          </span>
+        </div>
         
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           {Object.keys(METHOD_LABELS).map(method => (
@@ -138,7 +143,7 @@ function ResultItem({ data }) {
           <div className="result-stats">
             <span>Objects: <span className="stat-value">{original.objects}</span></span>
             <span>Avg Conf: <span className="stat-value">{original.confidence.toFixed(2)}</span></span>
-            <span>Scene: <span className={`stat-value ${original.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{original.day_night}</span></span>
+            <span>Scene: <span className={`stat-value ${original.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{original.day_night}</span> ({original.brightness.toFixed(0)})</span>
           </div>
         </div>
         
@@ -147,7 +152,7 @@ function ResultItem({ data }) {
           <div className="result-stats">
             <span>Objects: <span className="stat-value">{active.objects}</span></span>
             <span>Avg Conf: <span className="stat-value">{active.confidence.toFixed(2)}</span></span>
-            <span>Scene: <span className={`stat-value ${active.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{active.day_night}</span></span>
+            <span>Scene: <span className={`stat-value ${active.day_night === 'Night' ? 'text-night' : 'text-day'}`}>{active.day_night}</span> ({active.brightness.toFixed(0)})</span>
           </div>
         </div>
       </div>

@@ -20,9 +20,19 @@ def detect_day_night(image):
     l_channel = lab[:, :, 0]
     avg_brightness = np.mean(l_channel)
     
-    # Threshold for day/night (experimentally chosen)
-    threshold = 100 
-    status = "Day" if avg_brightness > threshold else "Night"
+    # Calculate percentage of dark pixels (below 90 lightness - handles glare better)
+    dark_pixels_ratio = np.sum(l_channel < 90) / l_channel.size
+    
+    # A night image with headlights has high average brightness, 
+    # but still contains a large percentage of relatively dark regions.
+    if avg_brightness < 105: # Very dark overall
+        status = "Night"
+    elif dark_pixels_ratio > 0.4: # More than 40% is dark (sky, shadows)
+        status = "Night"
+    else:
+        status = "Day"
+        
+    print(f"DEBUG: Brightness={avg_brightness:.2f}, DarkRatio={dark_pixels_ratio:.2f} -> {status}")
     return status, float(avg_brightness)
 
 def detect_objects(image):
