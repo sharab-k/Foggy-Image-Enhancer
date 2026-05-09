@@ -1,0 +1,166 @@
+import React, { useState } from 'react';
+import ImageUploader from './components/ImageUploader';
+import ResultsDashboard from './components/ResultsDashboard';
+import { DownloadCloud, Activity, Bug } from 'lucide-react';
+
+function App() {
+  const [files, setFiles] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [results, setResults] = useState(null);
+  const [batchId, setBatchId] = useState(null);
+  const [apiVersion, setApiVersion] = useState(null);
+  const [error, setError] = useState(null);
+  const [showDebug, setShowDebug] = useState(false);
+
+  const handleProcess = async () => {
+    if (files.length === 0) return;
+    
+    setIsProcessing(true);
+    setError(null);
+    setResults(null);
+    
+    const formData = new FormData();
+    files.forEach(f => {
+      formData.append('files', f.file);
+    });
+
+    // We can also append params if we want the advanced toggle later
+    formData.append('clahe_clip', 2.0);
+    formData.append('gamma_val', 1.5);
+    formData.append('bilateral_d', 9);
+    formData.append('dark_window', 15);
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      console.log(`Sending request to: ${apiUrl}/api/process`);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
+      
+      const response = await fetch(`${apiUrl}/api/process`, {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      console.log('Response received, status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      
+      console.log('Parsing JSON response...');
+      const data = await response.json();
+      console.log('Response parsed successfully', data.results?.length, 'images processed');
+      
+      setBatchId(data.batch_id);
+      setResults(data.results);
+      setApiVersion(data.version);
+    } catch (err) {
+      const errMsg = err.name === 'AbortError' ? 'Request timed out. The server took too long to respond.' : (err.message || 'An error occurred during processing.');
+      setError(errMsg);
+      console.error('Processing error:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleReset = () => {
+    setFiles([]);
+    setResults(null);
+    setBatchId(null);
+    setError(null);
+  };
+
+  return (
+    <div className="app-container">
+      <header className="header">
+        <div>
+          <div className="header-title">ENHANCING ROAD SCENE VISIBILITY UNDER FOGGY CONDITIONS FOR AUTONOMOUS DRIVING</div>
+          <div className="header-subtitle">
+            Computer Vision Pipeline Demo {apiVersion && <span style={{fontSize: '0.7rem', opacity: 0.6, marginLeft: '0.5rem'}}>(API v{apiVersion})</span>}
+            <div style={{fontSize: '0.6rem', opacity: 0.4}}>Endpoint: {import.meta.env.VITE_API_URL || 'http://localhost:8000'}</div>
+          </div>
+        </div>
+        {results && (
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button className="btn-primary" onClick={handleReset}>
+              Start Over
+            </button>
+          </div>
+        )}
+      </header>
+
+      <main className="main-content">
+        {!results && (
+          <section className="hero">
+            <h1>Enhance Foggy Images and Improve Object Detection</h1>
+            <p>
+              Upload low-contrast or hazy images to run our multi-algorithm enhancement pipeline.
+              Compare how CLAHE, Gamma Correction, Bilateral Filtering, and Dark Channel Prior affect YOLOv5 detection.
+            </p>
+          </section>
+        )}
+
+        {!results && !isProcessing && (
+           <ImageUploader 
+             files={files} 
+             setFiles={setFiles} 
+             onProcess={handleProcess}
+             isProcessing={isProcessing}
+           />
+        )}
+
+        {isProcessing && (
+          <div className="card loader-container">
+            <div className="spinner"></div>
+            <h3>Processing Pipeline Active</h3>
+            <p className="text-muted">Applying enhancements and running YOLOv5 detection...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="card" style={{ borderLeft: '4px solid #EF4444' }}>
+            <h3 style={{ color: '#EF4444' }}>Error</h3>
+            <p>{error}</p>
+            <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => setError(null)}>Dismiss</button>
+          </div>
+        )}
+
+        {results && !isProcessing && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
+              <Activity color="var(--primary)" />
+              <h2>Analysis Results</h2>
+            </div>
+            
+            <ResultsDashboard results={results} />
+
+            <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+               <button 
+                 onClick={() => setShowDebug(!showDebug)} 
+                 style={{ background: 'transparent', border: '1px solid #334155', color: '#94A3B8', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 auto' }}
+               >
+                 <Bug size={14} />
+                 {showDebug ? 'Hide Debug Data' : 'Show Raw API Data'}
+               </button>
+               
+               {showDebug && (
+                 <pre style={{ textAlign: 'left', background: '#0F172A', padding: '1rem', borderRadius: '8px', marginTop: '1rem', fontSize: '0.7rem', overflow: 'auto', maxHeight: '300px', border: '1px solid #334155' }}>
+                   {JSON.stringify({ 
+                     version: apiVersion, 
+                     results: results[0]?.methods?.original ? { ...results[0].methods.original, image: 'BASE64_HIDDEN' } : results[0] 
+                   }, null, 2)}
+                 </pre>
+               )}
+            </div>
+          </div>
+        )}
+
+      </main>
+    </div>
+  );
+}
+
+export default App;
