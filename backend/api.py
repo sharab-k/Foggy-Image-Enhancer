@@ -11,11 +11,7 @@ import numpy as np
 
 # Import our custom modules
 from enhancement import process_all_enhancements
-from detection import detect_objects
-
-def detect_day_night_internal(image):
-    # Hardcoded to Night as requested for testing/deployment verification
-    return "Night", 50.0
+from detection import detect_objects, detect_day_night
 
 router = APIRouter()
 TEMP_DIR = "temp"
@@ -84,7 +80,7 @@ async def process_images(
         
         # 2. Detect Day/Night once on the ORIGINAL image
         print(f"Running day/night detection for {file.filename}...")
-        day_night, brightness = detect_day_night_internal(img)
+        day_night, brightness = detect_day_night(img)
         print(f"Day/Night Result: {day_night}, Brightness: {brightness}")
         
         # 3. Detect & Collect Results
